@@ -1,3 +1,4 @@
+import { UserNotFoundError } from "../errors/UserNotFoundError";
 import { User } from "../models/User";
 import { UserRepository } from "../repositories/UserRepository";
 import { randomUUID } from "crypto";
@@ -63,5 +64,13 @@ export class UserService {
     }
 
     return this.userRepository.update(user);
+  }
+
+  async delete(id: string): Promise<void> {
+    const deleted = await this.userRepository.deleteById(id);
+
+    if (!deleted) {
+      throw new UserNotFoundError();
+    }
   }
 }

@@ -110,4 +110,29 @@ userRoutes.get("/:id", (req, res) => userController.getById(req, res));
  */
 userRoutes.put("/:id", (req, res) => userController.update(req, res));
 
+/**
+ * @openapi
+ * /users/{id}:
+ *   delete:
+ *     summary: Remove um usuário pelo ID
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID do usuário
+ *         schema:
+ *           type: string
+ *           example: 123e4567-e89b-12d3-a456-426614174000
+ *     responses:
+ *       204:
+ *         description: Usuário removido com sucesso
+ *       404:
+ *         description: Usuário não encontrado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+userRoutes.delete("/:id", (req, res) => userController.delete(req, res));
+
 export { userRoutes };

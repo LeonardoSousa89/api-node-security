@@ -29,4 +29,15 @@ export class UserRepository implements IUserRepository {
     mockDatabase.users[index] = user;
     return user;
   }
+
+  async deleteById(id: string): Promise<boolean> {
+    const index = mockDatabase.users.findIndex((u) => u.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    mockDatabase.users.splice(index, 1);
+    return true;
+  }
 }
