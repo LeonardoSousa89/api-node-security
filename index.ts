@@ -17,6 +17,10 @@ app.use("/users", [userRoutes]);
 
 const PORT = Number(process.env.PORT);
 
-app.listen(PORT, () => {
-  console.table({ out: `🚀 Server running on port ${PORT}` });
-});
+export { app };
+
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}
