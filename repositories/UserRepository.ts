@@ -18,4 +18,15 @@ export class UserRepository implements IUserRepository {
   async findAll(): Promise<User[]> {
     return mockDatabase.users;
   }
+
+  async update(user: User): Promise<User> {
+    const index = mockDatabase.users.findIndex((u) => u.id === user.id);
+
+    if (index === -1) {
+      throw new Error("User not found");
+    }
+
+    mockDatabase.users[index] = user;
+    return user;
+  }
 }
