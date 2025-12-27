@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/UserService";
 import { UserRepository } from "../repositories/UserRepository";
+import { UserNotFoundError } from "../errors/UserNotFoundError";
 
 export class UserController {
   private userService: UserService;
@@ -50,5 +51,22 @@ export class UserController {
     });
 
     return res.status(200).json(updatedUser);
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+
+      await this.userService.delete(id);
+
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof UserNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+
+      // erro inesperado
+      return res.status(500).json({ message: "Internal server error" });
+    }
   }
 }
