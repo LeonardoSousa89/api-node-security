@@ -38,4 +38,17 @@ export class UserController {
 
     return res.status(200).json(user);
   }
+
+  async update(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+    const { email, password } = req.body;
+
+    const updatedUser = await this.userService.update({
+      id,
+      email,
+      password,
+    });
+
+    return res.status(200).json(updatedUser);
+  }
 }

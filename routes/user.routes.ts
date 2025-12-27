@@ -72,4 +72,42 @@ userRoutes.get("/", (req, res) => userController.getAll(req, res));
  */
 userRoutes.get("/:id", (req, res) => userController.getById(req, res));
 
+/**
+ * @openapi
+ * /users/{id}:
+ *   put:
+ *     summary: Atualiza email e/ou senha do usuário
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do usuário
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: novo@email.com
+ *               password:
+ *                 type: string
+ *                 example: novaSenha123
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado com sucesso
+ *       404:
+ *         description: Usuário não encontrado
+ *       409:
+ *         description: Email já está em uso
+ */
+userRoutes.put("/:id", (req, res) => userController.update(req, res));
+
 export { userRoutes };

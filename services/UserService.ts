@@ -8,6 +8,12 @@ interface CreateUserDTO {
   password: string;
 }
 
+interface UpdateUserDTO {
+  id: string;
+  email?: string;
+  password?: string;
+}
+
 export class UserService {
   constructor(private userRepository: UserRepository) {}
 
@@ -31,5 +37,31 @@ export class UserService {
 
   async getById(id: string): Promise<User | null> {
     return this.userRepository.findById(id);
+  }
+
+  async update(data: UpdateUserDTO): Promise<User> {
+    const user = await this.userRepository.findById(data.id);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (data.email && data.email !== user.email) {
+      const emailAlreadyUsed = await this.userRepository.findByEmail(
+        data.email
+      );
+
+      if (emailAlreadyUsed) {
+        throw new Error("Email already in use");
+      }
+
+      user.email = data.email;
+    }
+
+    if (data.password) {
+      user.password = data.password;
+    }
+
+    return this.userRepository.update(user);
   }
 }
