@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { userRoutes } from "./routes/user.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./docs/swagger";
+import { errorHandler } from "./errors/errorHandler";
 
 dotenv.config();
 
@@ -17,10 +18,12 @@ app.use("/users", [userRoutes]);
 
 const PORT = Number(process.env.PORT);
 
+app.use(errorHandler)
+
 export { app };
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+    console.table({ up: `🚀 Server running on port ${PORT}` });
   });
 }

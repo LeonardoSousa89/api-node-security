@@ -1,6 +1,7 @@
 import { IUserRepository } from "./interface/IUserRepository";
 import { User } from "../models/User";
 import { mockDatabase } from "../tests/mock/db";
+import { UserNotFoundError } from "../errors/UserNotFoundError";
 
 export class UserRepository implements IUserRepository {
   async create(user: User): Promise<void> {
@@ -23,7 +24,7 @@ export class UserRepository implements IUserRepository {
     const index = mockDatabase.users.findIndex((u) => u.id === user.id);
 
     if (index === -1) {
-      throw new Error("User not found");
+      throw new UserNotFoundError()
     }
 
     mockDatabase.users[index] = user;
