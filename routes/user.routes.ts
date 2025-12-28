@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { UserController } from "../controllers/UserController";
 
 const userRoutes = Router();
@@ -34,8 +34,14 @@ const userController = new UserController();
  *     responses:
  *       201:
  *         description: Usuário criado com sucesso
+ *       409:
+ *         description: Email já está em uso
+ *       500:
+ *         description: Erro interno do servidor
  */
-userRoutes.post("/", (req, res) => userController.create(req, res));
+userRoutes.post("/", (req: Request, res: Response, next: NextFunction) =>
+  userController.create(req, res, next)
+);
 
 /**
  * @openapi
@@ -47,8 +53,12 @@ userRoutes.post("/", (req, res) => userController.create(req, res));
  *     responses:
  *       200:
  *         description: Lista de usuários
+ *       500:
+ *         description: Erro interno do servidor
  */
-userRoutes.get("/", (req, res) => userController.getAll(req, res));
+userRoutes.get("/", (req: Request, res: Response, next: NextFunction) =>
+  userController.getAll(req, res, next)
+);
 
 /**
  * @openapi
@@ -69,8 +79,12 @@ userRoutes.get("/", (req, res) => userController.getAll(req, res));
  *         description: Usuário encontrado
  *       404:
  *         description: Usuário não encontrado
+ *       500:
+ *         description: Erro interno do servidor
  */
-userRoutes.get("/:id", (req, res) => userController.getById(req, res));
+userRoutes.get("/:id", (req: Request, res: Response, next: NextFunction) =>
+  userController.getById(req, res, next)
+);
 
 /**
  * @openapi
@@ -83,9 +97,9 @@ userRoutes.get("/:id", (req, res) => userController.getById(req, res));
  *       - in: path
  *         name: id
  *         required: true
+ *         description: ID do usuário
  *         schema:
  *           type: string
- *         description: ID do usuário
  *     requestBody:
  *       required: true
  *       content:
@@ -107,8 +121,12 @@ userRoutes.get("/:id", (req, res) => userController.getById(req, res));
  *         description: Usuário não encontrado
  *       409:
  *         description: Email já está em uso
+ *       500:
+ *         description: Erro interno do servidor
  */
-userRoutes.put("/:id", (req, res) => userController.update(req, res));
+userRoutes.put("/:id", (req: Request, res: Response, next: NextFunction) =>
+  userController.update(req, res, next)
+);
 
 /**
  * @openapi
@@ -133,6 +151,8 @@ userRoutes.put("/:id", (req, res) => userController.update(req, res));
  *       500:
  *         description: Erro interno do servidor
  */
-userRoutes.delete("/:id", (req, res) => userController.delete(req, res));
+userRoutes.delete("/:id", (req: Request, res: Response, next: NextFunction) =>
+  userController.delete(req, res, next)
+);
 
 export { userRoutes };

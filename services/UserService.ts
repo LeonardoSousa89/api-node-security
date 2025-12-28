@@ -1,3 +1,4 @@
+import { EmailAlreadyInUseError } from "../errors/EmailAlreadyInUseError";
 import { UserNotFoundError } from "../errors/UserNotFoundError";
 import { User } from "../models/User";
 import { UserRepository } from "../repositories/UserRepository";
@@ -22,7 +23,7 @@ export class UserService {
     const emailExists = await this.userRepository.findByEmail(data.email);
 
     if (emailExists) {
-      throw new Error("User already exists");
+      throw new EmailAlreadyInUseError();
     }
 
     const user = new User(randomUUID(), data.name, data.email, data.password);
@@ -44,7 +45,7 @@ export class UserService {
     const user = await this.userRepository.findById(data.id);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new UserNotFoundError();
     }
 
     if (data.email && data.email !== user.email) {
@@ -53,7 +54,7 @@ export class UserService {
       );
 
       if (emailAlreadyUsed) {
-        throw new Error("Email already in use");
+        throw new EmailAlreadyInUseError();
       }
 
       user.email = data.email;
