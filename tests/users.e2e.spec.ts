@@ -1,11 +1,12 @@
 import request from "supertest";
 import { app } from "../index";
-import { mockDatabase } from "../tests/mock/db";
+import { mockDatabase } from "./mock/db";
 import { UserRepository } from "../repositories/UserRepository";
 
 describe("Users CRUD (E2E)", () => {
   beforeEach(() => {
     mockDatabase.users = [];
+    jest.restoreAllMocks();
   });
 
   /**
@@ -14,7 +15,7 @@ describe("Users CRUD (E2E)", () => {
    * ==========================
    */
   describe("POST /users", () => {
-    it("201 → cria usuário", async () => {
+    it("201 → creates user", async () => {
       const res = await request(app).post("/users").send({
         name: "Leo",
         email: "leo@email.com",
@@ -23,9 +24,10 @@ describe("Users CRUD (E2E)", () => {
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty("id");
+      expect(res.body.email).toBe("leo@email.com");
     });
 
-    it("409 → email duplicado", async () => {
+    it("409 → email already in use", async () => {
       await request(app).post("/users").send({
         name: "User 1",
         email: "dup@email.com",
@@ -39,10 +41,10 @@ describe("Users CRUD (E2E)", () => {
       });
 
       expect(res.status).toBe(409);
-      expect(res.body.message).toBeDefined();
+      expect(res.body).toHaveProperty("message");
     });
 
-    it("500 → erro inesperado", async () => {
+    it("500 → unexpected error", async () => {
       jest
         .spyOn(UserRepository.prototype, "create")
         .mockRejectedValueOnce(new Error("Unexpected error"));
@@ -54,6 +56,7 @@ describe("Users CRUD (E2E)", () => {
       });
 
       expect(res.status).toBe(500);
+      expect(res.body.message).toBe("Internal server error");
     });
   });
 
@@ -63,7 +66,7 @@ describe("Users CRUD (E2E)", () => {
    * ==========================
    */
   describe("GET /users", () => {
-    it("200 → lista usuários", async () => {
+    it("200 → returns users list", async () => {
       await request(app).post("/users").send({
         name: "Leo",
         email: "list@email.com",
@@ -74,6 +77,7 @@ describe("Users CRUD (E2E)", () => {
 
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBe(1);
     });
   });
 
@@ -83,7 +87,7 @@ describe("Users CRUD (E2E)", () => {
    * ==========================
    */
   describe("GET /users/:id", () => {
-    it("200 → usuário encontrado", async () => {
+    it("200 → returns user", async () => {
       const create = await request(app).post("/users").send({
         name: "Leo",
         email: "get@email.com",
@@ -93,14 +97,16 @@ describe("Users CRUD (E2E)", () => {
       const res = await request(app).get(`/users/${create.body.id}`);
 
       expect(res.status).toBe(200);
+      expect(res.body.id).toBe(create.body.id);
     });
 
-    it("404 → usuário não encontrado", async () => {
+    it("404 → user not found", async () => {
       const res = await request(app).get(
         "/users/00000000-0000-0000-0000-000000000000"
       );
 
       expect(res.status).toBe(404);
+      expect(res.body).toHaveProperty("message");
     });
   });
 
@@ -110,7 +116,7 @@ describe("Users CRUD (E2E)", () => {
    * ==========================
    */
   describe("PUT /users/:id", () => {
-    it("200 → atualiza email", async () => {
+    it("200 → updates email", async () => {
       const create = await request(app).post("/users").send({
         name: "Leo",
         email: "old@email.com",
@@ -125,15 +131,16 @@ describe("Users CRUD (E2E)", () => {
       expect(res.body.email).toBe("new@email.com");
     });
 
-    it("404 → usuário inexistente", async () => {
+    it("404 → user not found", async () => {
       const res = await request(app)
         .put("/users/00000000-0000-0000-0000-000000000000")
         .send({ email: "x@email.com" });
 
       expect(res.status).toBe(404);
+      expect(res.body).toHaveProperty("message");
     });
 
-    it("409 → email já em uso", async () => {
+    it("409 → email already in use", async () => {
       await request(app).post("/users").send({
         name: "User 1",
         email: "used@email.com",
@@ -151,6 +158,7 @@ describe("Users CRUD (E2E)", () => {
         .send({ email: "used@email.com" });
 
       expect(res.status).toBe(409);
+      expect(res.body).toHaveProperty("message");
     });
   });
 
@@ -160,7 +168,7 @@ describe("Users CRUD (E2E)", () => {
    * ==========================
    */
   describe("DELETE /users/:id", () => {
-    it("204 → remove usuário", async () => {
+    it("204 → deletes user", async () => {
       const create = await request(app).post("/users").send({
         name: "Leo",
         email: "delete@email.com",
@@ -172,12 +180,13 @@ describe("Users CRUD (E2E)", () => {
       expect(res.status).toBe(204);
     });
 
-    it("404 → usuário inexistente", async () => {
+    it("404 → user not found", async () => {
       const res = await request(app).delete(
         "/users/00000000-0000-0000-0000-000000000000"
       );
 
       expect(res.status).toBe(404);
+      expect(res.body).toHaveProperty("message");
     });
   });
 });
