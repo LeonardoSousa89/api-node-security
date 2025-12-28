@@ -26,10 +26,14 @@ export class UserService {
       throw new EmailAlreadyInUseError();
     }
 
-    const user = new User(randomUUID(), data.name, data.email, data.password);
+    const user = new User(
+      randomUUID(),
+      data.name,
+      data.email,
+      data.password
+    );
 
     await this.userRepository.create(user);
-
     return user;
   }
 
@@ -37,8 +41,14 @@ export class UserService {
     return this.userRepository.findAll();
   }
 
-  async getById(id: string): Promise<User | null> {
-    return this.userRepository.findById(id);
+  async getById(id: string): Promise<User> {
+    const user = await this.userRepository.findById(id);
+
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    return user;
   }
 
   async update(data: UpdateUserDTO): Promise<User> {
@@ -64,7 +74,13 @@ export class UserService {
       user.password = data.password;
     }
 
-    return this.userRepository.update(user);
+    const updated = await this.userRepository.update(user);
+
+    if (!updated) {
+      throw new UserNotFoundError();
+    }
+
+    return updated;
   }
 
   async delete(id: string): Promise<void> {
