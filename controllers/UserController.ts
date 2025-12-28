@@ -6,35 +6,19 @@ export class UserController {
   private userService: UserService;
 
   constructor() {
-    const userRepository = new UserRepository();
-    this.userService = new UserService(userRepository);
+    this.userService = new UserService(new UserRepository());
   }
 
-  async create(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> {
+  async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const { name, email, password } = req.body;
-
-      const user = await this.userService.create({
-        name,
-        email,
-        password,
-      });
-
+      const user = await this.userService.create(req.body);
       return res.status(201).json(user);
     } catch (error) {
       next(error);
     }
   }
 
-  async getAll(
-    _req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> {
+  async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const users = await this.userService.getAll();
       return res.status(200).json(users);
@@ -43,54 +27,31 @@ export class UserController {
     }
   }
 
-  async getById(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> {
+  async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-
-      const user = await this.userService.getById(id);
-
-      // IMPORTANT: service should throw UserNotFoundError
+      const user = await this.userService.getById(req.params.id);
       return res.status(200).json(user);
     } catch (error) {
       next(error);
     }
   }
 
-  async update(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> {
+  async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-      const { email, password } = req.body;
-
-      const updatedUser = await this.userService.update({
-        id,
-        email,
-        password,
+      const user = await this.userService.update({
+        id: req.params.id,
+        ...req.body,
       });
 
-      return res.status(200).json(updatedUser);
+      return res.status(200).json(user);
     } catch (error) {
       next(error);
     }
   }
 
-  async delete(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> {
+  async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-
-      await this.userService.delete(id);
-
+      await this.userService.delete(req.params.id);
       return res.status(204).send();
     } catch (error) {
       next(error);
