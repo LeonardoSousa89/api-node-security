@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Leonardo Sousa",
+    "email": "leonardo.sousa@email.com",
+    "password": "Senha@123"
+  },
+  {
+    "name": "Maria Oliveira",
+    "email": "maria.oliveira@email.com",
+    "password": "Senha@123"
+  },
+  {
+    "name": "João Pereira",
+    "email": "joao.pereira@email.com",
+    "password": "Senha@123"
+  },
+  {
+    "name": "Ana Santos",
+    "email": "ana.santos@email.com",
+    "password": "Senha@123"
+  },
+  {
+    "name": "Carlos Almeida",
+    "email": "carlos.almeida@email.com",
+    "password": "Senha@123"
+  },
+  {
+    "name": "Fernanda Lima",
+    "email": "fernanda.lima@email.com",
+    "password": "Senha@123"
+  },
+  {
+    "name": "Rafael Costa",
+    "email": "rafael.costa@email.com",
+    "password": "Senha@123"
+  },
+  {
+    "name": "Juliana Rocha",
+    "email": "juliana.rocha@email.com",
+    "password": "Senha@123"
+  },
+  {
+    "name": "Pedro Henrique",
+    "email": "pedro.henrique@email.com",
+    "password": "Senha@123"
+  },
+  {
+    "name": "Beatriz Fernandes",
+    "email": "beatriz.fernandes@email.com",
+    "password": "Senha@123"
+  }
+]

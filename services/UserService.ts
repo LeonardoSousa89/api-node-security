@@ -1,3 +1,4 @@
+import { EmailAlreadyInUseError } from "../errors/EmailAlreadyInUseError";
 import { UserNotFoundError } from "../errors/UserNotFoundError";
 import { User } from "../models/User";
 import { UserRepository } from "../repositories/UserRepository";
@@ -22,13 +23,17 @@ export class UserService {
     const emailExists = await this.userRepository.findByEmail(data.email);
 
     if (emailExists) {
-      throw new Error("User already exists");
+      throw new EmailAlreadyInUseError();
     }
 
-    const user = new User(randomUUID(), data.name, data.email, data.password);
+    const user = new User(
+      randomUUID(),
+      data.name,
+      data.email,
+      data.password
+    );
 
     await this.userRepository.create(user);
-
     return user;
   }
 
@@ -36,15 +41,21 @@ export class UserService {
     return this.userRepository.findAll();
   }
 
-  async getById(id: string): Promise<User | null> {
-    return this.userRepository.findById(id);
+  async getById(id: string): Promise<User> {
+    const user = await this.userRepository.findById(id);
+
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    return user;
   }
 
   async update(data: UpdateUserDTO): Promise<User> {
     const user = await this.userRepository.findById(data.id);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new UserNotFoundError();
     }
 
     if (data.email && data.email !== user.email) {
@@ -53,7 +64,7 @@ export class UserService {
       );
 
       if (emailAlreadyUsed) {
-        throw new Error("Email already in use");
+        throw new EmailAlreadyInUseError();
       }
 
       user.email = data.email;
@@ -63,7 +74,13 @@ export class UserService {
       user.password = data.password;
     }
 
-    return this.userRepository.update(user);
+    const updated = await this.userRepository.update(user);
+
+    if (!updated) {
+      throw new UserNotFoundError();
+    }
+
+    return updated;
   }
 
   async delete(id: string): Promise<void> {
