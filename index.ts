@@ -18,7 +18,7 @@ app.use("/users", [userRoutes]);
 
 const PORT = Number(process.env.PORT);
 
-app.use(errorHandler)
+app.use(errorHandler);
 
 export { app };
 
